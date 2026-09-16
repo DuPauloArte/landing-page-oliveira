@@ -1,4 +1,3 @@
-import { env } from "cloudflare:workers";
 
 const WHATSAPP_NUMBER = "5543988440706";
 type Lead = Record<string, unknown>;
@@ -31,7 +30,7 @@ export async function POST(request: Request) {
     const lead = await request.json() as Lead;
     if (!validate(lead)) return Response.json({ error: "Revise os campos obrigatórios." }, { status: 400 });
 
-    const webhookUrl = env.GOOGLE_SHEETS_WEBHOOK_URL;
+    const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
     if (!webhookUrl) return Response.json({ error: "A integração com a planilha ainda está sendo configurada. Tente novamente em breve." }, { status: 503 });
 
     const message = buildMessage(lead);
