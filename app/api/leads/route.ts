@@ -1,5 +1,5 @@
 
-const WHATSAPP_NUMBER = "5543988440706";
+const WHATSAPP_NUMBER = "5543999154909";
 type Lead = Record<string, unknown>;
 const text = (value: unknown) => typeof value === "string" ? value.trim() : "";
 
