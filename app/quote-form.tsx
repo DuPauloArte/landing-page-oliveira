@@ -9,6 +9,12 @@ import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
 type QuoteData = {
   structure: string; height: string; levels: string; load: string;
   length: string; width: string; freight: string; cep: string;
@@ -144,8 +150,21 @@ export function QuoteForm() {
         body: JSON.stringify({ ...data, ...tracking }),
       });
       const result = await response.json() as { whatsappUrl?: string; error?: string };
-      if (!response.ok || !result.whatsappUrl) throw new Error(result.error || "Não foi possível registrar a solicitação.");
-      window.location.href = result.whatsappUrl;
+      if (!response.ok || !result.whatsappUrl) {
+  throw new Error(result.error || "Não foi possível registrar a solicitação.");
+}
+
+window.fbq?.("track", "Purchase", {
+  value: 0,
+  currency: "BRL",
+  content_name: "Solicitação de orçamento",
+  content_category: data.structure,
+});
+
+// Pequena espera para o Pixel registrar antes de abrir o WhatsApp.
+setTimeout(() => {
+  window.location.href = result.whatsappUrl!;
+}, 300);
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "Não foi possível concluir. Tente novamente.");
       setSubmitting(false);
